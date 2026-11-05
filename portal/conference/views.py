@@ -57,6 +57,11 @@ class RegisterView(FormView):
     template_name = "register.html"
     form_class = RegisterForm
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect("home")
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
         user = form.save()
         login(self.request, user)
