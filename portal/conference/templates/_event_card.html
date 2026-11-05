@@ -1,0 +1,13 @@
+{% load static %}
+<article class="card">
+  <img src="{% if event.image %}{% static 'img/' %}{{ event.image }}{% else %}{% static 'img/hero.jpg' %}{% endif %}" alt="" width="960" height="600" loading="lazy">
+  <div class="card-body">
+    <div>
+      <span class="tag">{{ event.city }}</span>
+      {% if event.is_finished %}<span class="tag tag-past">Прошло</span>{% endif %}
+    </div>
+    <h3><a href="{% url 'event_detail' event.pk %}">{{ event.title }}</a></h3>
+    <p class="meta">{{ event.starts_at|date:"j E, H:i" }}. {{ event.place }}</p>
+    <a class="btn btn-small" href="{% url 'event_detail' event.pk %}">Подробнее</a>
+  </div>
+</article>

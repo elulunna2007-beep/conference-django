@@ -1,12 +1,32 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}{{ event.title }}{% endblock %}
-{% block content %}
-<h1>{{ event.title }}</h1>
-<p>{{ event.starts_at|date:"d.m.Y H:i" }}, {{ event.city }}, {{ event.place }}</p>
-<p>{{ event.description }}</p>
-{% if event.is_finished %}
-  <p>Мероприятие прошло.</p>
-{% else %}
-  <p><a href="{% url 'apply' event.pk %}">Подать заявку</a></p>
-{% endif %}
+{% block body %}
+<section class="event-top">
+  <div class="container">
+    <div>
+      <span class="tag">{{ event.city }}</span>
+      <h1>{{ event.title }}</h1>
+      <p class="meta">{{ event.starts_at|date:"j E Y, H:i" }}. {{ event.place }}</p>
+      {% if event.is_finished %}
+        <p>Мероприятие прошло.</p>
+      {% elif is_admin %}
+        <p class="meta">Заявки подают участники.</p>
+      {% else %}
+        <a class="btn" href="{% url 'apply' event.pk %}">Подать заявку</a>
+      {% endif %}
+    </div>
+    <img src="{% if event.image %}{% static 'img/' %}{{ event.image }}{% else %}{% static 'img/hero.jpg' %}{% endif %}" alt="" width="960" height="600">
+  </div>
+</section>
+<div class="container event-info">
+  <div class="panel">
+    <h2>О мероприятии</h2>
+    <p>{{ event.description }}</p>
+  </div>
+  <div class="panel">
+    <h3>Отзывы</h3>
+    <p class="meta">Пока нет отзывов.</p>
+  </div>
+</div>
 {% endblock %}

@@ -5,7 +5,7 @@ from django.contrib.auth import password_validation
 from django.contrib.auth.models import Group, User
 from django.core.validators import RegexValidator
 
-from .models import Application, Profile, Status
+from .models import Application, Profile, Review, Status
 
 
 def normalize_phone(raw):
@@ -86,3 +86,20 @@ class ApplicationForm(forms.ModelForm):
         if commit:
             app.save()
         return app
+
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ["rating", "text"]
+        labels = {"rating": "Оценка", "text": "Ваш отзыв"}
+        widgets = {
+            "rating": forms.Select(choices=[(i, "%d из 5" % i) for i in range(5, 0, -1)]),
+            "text": forms.Textarea(attrs={"rows": 4, "maxlength": 500}),
+        }
+
+    def clean_text(self):
+        text = self.cleaned_data["text"].strip()
+        if len(text) < 10:
+            raise forms.ValidationError("Напишите хотя бы 10 символов.")
+        return text

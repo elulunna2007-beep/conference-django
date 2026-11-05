@@ -43,12 +43,16 @@ class Event(models.Model):
         return self.starts_at < timezone.now()
 
 
+ROOMS = ["Большой зал", "Малый зал", "Онлайн-трансляция"]
+PAYMENTS = ["Банковская карта", "Наличные при регистрации", "Счёт для организации"]
+
+
 class Application(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="applications")
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="applications")
     status = models.ForeignKey(Status, on_delete=models.PROTECT)
-    room = models.CharField("Помещение", max_length=60)
-    payment = models.CharField("Способ оплаты", max_length=40)
+    room = models.CharField("Помещение", max_length=60, choices=[(r, r) for r in ROOMS])
+    payment = models.CharField("Способ оплаты", max_length=40, choices=[(p, p) for p in PAYMENTS])
     comment = models.CharField("Комментарий", max_length=200, blank=True)
     created_at = models.DateTimeField("Создана", auto_now_add=True)
 
@@ -61,6 +65,10 @@ class Application(models.Model):
 
     def __str__(self):
         return "%s: %s" % (self.user.username, self.event.title)
+
+    def can_review(self):
+        """Отзыв можно оставить, когда заявка завершена, мероприятие прошло и отзыва ещё нет."""
+        return self.status.name == "завершено" and self.event.is_finished() and not hasattr(self, "review")
 
 
 class Review(models.Model):

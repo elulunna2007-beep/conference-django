@@ -184,3 +184,63 @@ class SecurityTests(TestCase):
         self.client.force_login(admin)
         r = self.client.get(reverse("manage"))
         self.assertNotContains(r, "<script>alert(1)</script>")
+
+
+class ReviewAndFilterTests(TestCase):
+    def setUp(self):
+        self.user = make_user("anna")
+        self.other = make_user("petr")
+        self.admin = make_user("boss", "Администраторы")
+        self.past = make_event(days=-3, title="Прошедшее")
+        self.future = make_event(days=5, title="Будущее")
+        self.new, self.assigned, self.done = [Status.objects.get(name=n) for n in ("новая", "назначено", "завершено")]
+
+    def app(self, event, status, user=None):
+        return Application.objects.create(user=user or self.user, event=event, status=status, room="Малый зал", payment="Банковская карта")
+
+    def test_cannot_review_not_completed(self):
+        a = self.app(self.past, self.assigned)
+        self.client.force_login(self.user)
+        r = self.client.get(reverse("review", args=[a.pk]))
+        self.assertRedirects(r, reverse("my_applications"))
+
+    def test_cannot_review_before_event(self):
+        a = self.app(self.future, self.done)
+        self.client.force_login(self.user)
+        self.assertRedirects(self.client.get(reverse("review", args=[a.pk])), reverse("my_applications"))
+
+    def test_review_saved_after_completion(self):
+        a = self.app(self.past, self.done)
+        self.client.force_login(self.user)
+        r = self.client.post(reverse("review", args=[a.pk]), {"rating": 5, "text": "Очень полезная встреча"})
+        self.assertRedirects(r, reverse("my_applications"))
+        self.assertEqual(a.review.rating, 5)
+        self.assertRedirects(self.client.get(reverse("review", args=[a.pk])), reverse("my_applications"))
+
+    def test_cannot_review_foreign_application(self):
+        a = self.app(self.past, self.done, user=self.other)
+        self.client.force_login(self.user)
+        self.assertEqual(self.client.get(reverse("review", args=[a.pk])).status_code, 404)
+
+    def test_review_text_too_short(self):
+        a = self.app(self.past, self.done)
+        self.client.force_login(self.user)
+        r = self.client.post(reverse("review", args=[a.pk]), {"rating": 4, "text": "ок"})
+        self.assertEqual(r.status_code, 200)
+        self.assertFalse(hasattr(Application.objects.get(pk=a.pk), "review"))
+
+    def test_room_and_payment_from_lists_only(self):
+        form = ApplicationForm({"room": "Подвал", "payment": "Биткоины"}, user=self.user, event=self.future)
+        self.assertFalse(form.is_valid())
+        self.assertIn("room", form.errors)
+        self.assertIn("payment", form.errors)
+
+    def test_admin_filter_by_status_and_event(self):
+        self.app(self.past, self.done)
+        self.app(self.future, self.new, user=self.other)
+        self.client.force_login(self.admin)
+        r = self.client.get(reverse("manage"), {"status": self.new.pk})
+        self.assertEqual([a.status.name for a in r.context["applications"]], ["новая"])
+        r = self.client.get(reverse("manage"), {"event": self.past.pk})
+        self.assertEqual([a.event.title for a in r.context["applications"]], ["Прошедшее"])
+        self.assertEqual(len(self.client.get(reverse("manage")).context["applications"]), 2)

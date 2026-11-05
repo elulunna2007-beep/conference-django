@@ -1,9 +1,20 @@
 {% extends "base.html" %}
-{% block content %}
-<h1>Конференции.РФ</h1>
-<p>Портал для подачи заявок на участие в конференциях. Выберите мероприятие, зарегистрируйтесь и отправьте заявку.</p>
-<h2>Ближайшие мероприятия</h2>
-{% for event in events %}
-  <p><a href="{% url 'event_detail' event.pk %}">{{ event.title }}</a>, {{ event.city }}, {{ event.starts_at|date:"d.m.Y H:i" }}</p>
-{% endfor %}
+{% load static %}
+{% block body %}
+<section class="hero">
+  <div class="container">
+    <h1>Конференции, на которые можно подать заявку за две минуты</h1>
+    <p>Выберите мероприятие, зарегистрируйтесь и отправьте заявку. Статус заявки виден в личном кабинете.</p>
+    <a class="btn" href="{% url 'events' %}">Смотреть мероприятия</a>
+    {% if not user.is_authenticated %}<a class="btn btn-outline" href="{% url 'register' %}">Регистрация</a>{% endif %}
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="section-head"><h2>Ближайшие мероприятия</h2><a href="{% url 'events' %}">Все мероприятия</a></div>
+    <div class="cards">
+      {% for event in events %}{% include "_event_card.html" %}{% endfor %}
+    </div>
+  </div>
+</section>
 {% endblock %}

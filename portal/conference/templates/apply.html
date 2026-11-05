@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Заявка{% endblock %}
 {% block content %}
-<h1>Заявка на мероприятие</h1>
-<p>{{ event.title }}, {{ event.starts_at|date:"d.m.Y H:i" }}</p>
-<form method="post">{% csrf_token %}
-  {{ form.as_p }}
-  <button>Отправить заявку</button>
-</form>
+<div class="form-card">
+  <h1>Заявка на мероприятие</h1>
+  <p class="meta">{{ event.title }}, {{ event.starts_at|date:"j E, H:i" }}</p>
+  <form method="post">{% csrf_token %}
+    {% if form.non_field_errors %}<div class="form-error">{{ form.non_field_errors }}</div>{% endif %}
+    {% for field in form %}{% include "_field.html" %}{% endfor %}
+    <button class="btn">Отправить заявку</button>
+  </form>
+</div>
 {% endblock %}

@@ -1,16 +1,40 @@
 {% extends "base.html" %}
 {% block title %}Панель администратора{% endblock %}
 {% block content %}
-<h1>Панель администратора</h1>
-<table border="1" cellpadding="4">
-  <tr><th>Участник</th><th>Мероприятие</th><th>Помещение</th><th>Оплата</th><th>Статус</th><th></th></tr>
+<div class="page-title"><h1>Панель администратора</h1></div>
+<form class="filters" method="get">
+  <div class="field"><label for="status">Статус</label>
+    <select id="status" name="status">
+      <option value="">Все</option>
+      {% for s in statuses %}<option value="{{ s.pk }}" {% if status == s.pk|stringformat:"d" %}selected{% endif %}>{{ s.name }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="field"><label for="event">Мероприятие</label>
+    <select id="event" name="event">
+      <option value="">Все</option>
+      {% for e in events %}<option value="{{ e.pk }}" {% if event == e.pk|stringformat:"d" %}selected{% endif %}>{{ e.title }}</option>{% endfor %}
+    </select>
+  </div>
+  <button class="btn">Показать</button>
+  <a class="btn btn-outline" href="{% url 'manage' %}">Сбросить</a>
+</form>
+<p class="meta">Найдено заявок: {{ applications|length }}</p>
+<div class="app-list">
   {% for a in applications %}
-  <tr>
-    <td>{{ a.user.username }}</td><td>{{ a.event.title }}</td><td>{{ a.room }}</td><td>{{ a.payment }}</td><td>{{ a.status }}</td>
-    <td>{% if a.status.name != "завершено" %}
-      <form method="post" action="{% url 'next_status' a.pk %}">{% csrf_token %}<button>Дальше</button></form>
-    {% endif %}</td>
-  </tr>
+  <article class="app-card">
+    <div>
+      <h3>{{ a.event.title }}</h3>
+      <p class="meta">Участник {{ a.user.username }}. {{ a.room }}, {{ a.payment }}</p>
+    </div>
+    <div class="app-actions">
+      <span class="status {% include '_status_class.html' with status=a.status %}">{{ a.status }}</span>
+      {% if a.status.position < 3 %}
+      <form method="post" action="{% url 'next_status' a.pk %}">{% csrf_token %}<button class="btn btn-small">Перевести дальше</button></form>
+      {% endif %}
+    </div>
+  </article>
+  {% empty %}
+  <p>По этим условиям заявок нет.</p>
   {% endfor %}
-</table>
+</div>
 {% endblock %}

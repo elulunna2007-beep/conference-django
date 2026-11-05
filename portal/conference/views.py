@@ -5,8 +5,8 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic import CreateView, DetailView, FormView, ListView, TemplateView
 
-from .forms import ApplicationForm, RegisterForm
-from .models import Application, Event, Status
+from .forms import ApplicationForm, RegisterForm, ReviewForm
+from .models import Application, Event, Review, Status
 from .permissions import AdminRequiredMixin, ParticipantRequiredMixin
 
 
@@ -26,13 +26,18 @@ class EventListView(ListView):
     def get_queryset(self):
         events = Event.objects.all()
         q = self.request.GET.get("q", "").strip()
+        city = self.request.GET.get("city", "")
         if q:
             events = events.filter(title__icontains=q)
+        if city:
+            events = events.filter(city=city)
         return events
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["q"] = self.request.GET.get("q", "")
+        ctx["city"] = self.request.GET.get("city", "")
+        ctx["cities"] = Event.objects.order_by("city").values_list("city", flat=True).distinct()
         return ctx
 
 
@@ -91,7 +96,22 @@ class ManageView(AdminRequiredMixin, ListView):
     context_object_name = "applications"
 
     def get_queryset(self):
-        return Application.objects.select_related("event", "status", "user")
+        apps = Application.objects.select_related("event", "status", "user")
+        status = self.request.GET.get("status", "")
+        event = self.request.GET.get("event", "")
+        if status.isdigit():
+            apps = apps.filter(status_id=int(status))
+        if event.isdigit():
+            apps = apps.filter(event_id=int(event))
+        return apps
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["statuses"] = Status.objects.all()
+        ctx["events"] = Event.objects.all()
+        ctx["status"] = self.request.GET.get("status", "")
+        ctx["event"] = self.request.GET.get("event", "")
+        return ctx
 
 
 class NextStatusView(AdminRequiredMixin, View):
@@ -103,3 +123,29 @@ class NextStatusView(AdminRequiredMixin, View):
             app.save()
             messages.success(request, "Статус заявки изменён: %s." % following.name)
         return redirect("manage")
+
+
+class ReviewCreateView(ParticipantRequiredMixin, CreateView):
+    """Отзыв на свою заявку: только после завершения заявки и самого мероприятия."""
+    template_name = "review_form.html"
+    form_class = ReviewForm
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            self.application = get_object_or_404(Application, pk=kwargs["pk"], user=request.user)
+            if not self.application.can_review():
+                messages.error(request, "Отзыв можно оставить после завершения заявки и проведения мероприятия.")
+                return redirect("my_applications")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["application"] = self.application
+        return ctx
+
+    def form_valid(self, form):
+        review = form.save(commit=False)
+        review.application = self.application
+        review.save()
+        messages.success(self.request, "Спасибо, отзыв сохранён.")
+        return redirect("my_applications")

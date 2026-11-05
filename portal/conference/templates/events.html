@@ -1,11 +1,19 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Мероприятия{% endblock %}
 {% block content %}
-<h1>Мероприятия</h1>
-<form method="get"><input type="text" name="q" value="{{ q }}" placeholder="Название"> <button>Найти</button></form>
-{% for event in events %}
-  <p><a href="{% url 'event_detail' event.pk %}">{{ event.title }}</a>, {{ event.city }}, {{ event.starts_at|date:"d.m.Y H:i" }}</p>
-{% empty %}
-  <p>Ничего не найдено.</p>
-{% endfor %}
+<div class="page-title"><h1>Мероприятия</h1></div>
+<form class="filters" method="get">
+  <div class="field"><label for="q">Название</label><input type="text" id="q" name="q" value="{{ q }}" placeholder="Например, Python"></div>
+  <div class="field"><label for="city">Город</label>
+    <select id="city" name="city">
+      <option value="">Все города</option>
+      {% for c in cities %}<option value="{{ c }}" {% if c == city %}selected{% endif %}>{{ c }}</option>{% endfor %}
+    </select>
+  </div>
+  <button class="btn">Найти</button>
+</form>
+<div class="cards">
+  {% for event in events %}{% include "_event_card.html" %}{% empty %}<p>Ничего не найдено. Попробуйте изменить название или город.</p>{% endfor %}
+</div>
 {% endblock %}

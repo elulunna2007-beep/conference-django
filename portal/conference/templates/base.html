@@ -4,26 +4,39 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Конференции.РФ{% endblock %}</title>
-  <link rel="stylesheet" href="{% static 'css/basic.css' %}">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
 </head>
 <body>
-<header>
-  <a href="{% url 'home' %}"><b>Конференции.РФ</b></a>
-  <nav>
-    <a href="{% url 'events' %}">Мероприятия</a>
-    {% if user.is_authenticated %}
-      <a href="{% url 'my_applications' %}">Мои заявки</a>
-      {% if is_admin %}<a href="{% url 'manage' %}">Панель администратора</a>{% endif %}
-      <form method="post" action="{% url 'logout' %}" class="inline">{% csrf_token %}<button>Выйти ({{ user.username }})</button></form>
-    {% else %}
-      <a href="{% url 'login' %}">Войти</a>
-      <a href="{% url 'register' %}">Регистрация</a>
-    {% endif %}
-  </nav>
+<header class="site-header">
+  <div class="container">
+    <a class="logo" href="{% url 'home' %}">Конференции.РФ</a>
+    <nav class="nav">
+      <a href="{% url 'events' %}" {% if request.resolver_match.url_name == 'events' %}class="active"{% endif %}>Мероприятия</a>
+      {% if user.is_authenticated %}
+        {% if is_admin %}
+          <a href="{% url 'manage' %}" {% if request.resolver_match.url_name == 'manage' %}class="active"{% endif %}>Панель администратора</a>
+        {% else %}
+          <a href="{% url 'my_applications' %}" {% if request.resolver_match.url_name == 'my_applications' %}class="active"{% endif %}>Мои заявки</a>
+        {% endif %}
+        <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="link-button">Выйти ({{ user.username }})</button></form>
+      {% else %}
+        <a href="{% url 'login' %}" {% if request.resolver_match.url_name == 'login' %}class="active"{% endif %}>Войти</a>
+        <a href="{% url 'register' %}" class="btn btn-small">Регистрация</a>
+      {% endif %}
+    </nav>
+  </div>
 </header>
-<main>
-  {% for m in messages %}<p class="msg {{ m.tags }}">{{ m }}</p>{% endfor %}
-  {% block content %}{% endblock %}
-</main>
+{% if messages %}
+<div class="container messages">
+  {% for m in messages %}<div class="msg {{ m.tags }}">{{ m }}</div>{% endfor %}
+</div>
+{% endif %}
+{% block body %}<div class="container">{% block content %}{% endblock %}</div>{% endblock %}
+<footer class="site-footer">
+  <div class="container">
+    <div>Конференции.РФ, учебный портал</div>
+    <div>Фото: pexels.com</div>
+  </div>
+</footer>
 </body>
 </html>

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Страница не найдена{% endblock %}
 {% block content %}
-<h1>Страница не найдена</h1>
+<div class="page-title"><h1>Страница не найдена</h1></div>
 <p>Такой страницы нет. Проверьте адрес или вернитесь на главную.</p>
-<p><a href="{% url 'home' %}">На главную</a></p>
+<p><a class="btn btn-small" href="{% url 'home' %}">На главную</a></p>
 {% endblock %}

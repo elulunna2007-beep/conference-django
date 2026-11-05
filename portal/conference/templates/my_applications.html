@@ -1,10 +1,25 @@
 {% extends "base.html" %}
 {% block title %}Мои заявки{% endblock %}
 {% block content %}
-<h1>Мои заявки</h1>
-{% for a in applications %}
-  <p>{{ a.event.title }}, {{ a.event.starts_at|date:"d.m.Y" }}: <b>{{ a.status }}</b>. {{ a.room }}, {{ a.payment }}</p>
-{% empty %}
+<div class="page-title"><h1>Мои заявки</h1></div>
+<div class="app-list">
+  {% for a in applications %}
+  <article class="app-card">
+    <div>
+      <h3><a href="{% url 'event_detail' a.event.pk %}">{{ a.event.title }}</a></h3>
+      <p class="meta">{{ a.event.starts_at|date:"j E Y" }}. {{ a.room }}, {{ a.payment }}</p>
+    </div>
+    <div class="app-actions">
+      <span class="status {% include '_status_class.html' with status=a.status %}">{{ a.status }}</span>
+      {% if a.can_review %}
+        <a class="btn btn-small" href="{% url 'review' a.pk %}">Оставить отзыв</a>
+      {% elif a.review %}
+        <span class="meta">Отзыв оставлен</span>
+      {% endif %}
+    </div>
+  </article>
+  {% empty %}
   <p>Заявок пока нет. <a href="{% url 'events' %}">Выбрать мероприятие</a></p>
-{% endfor %}
+  {% endfor %}
+</div>
 {% endblock %}
