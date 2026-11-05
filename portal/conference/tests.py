@@ -310,3 +310,40 @@ class CrudAndFlowTests(TestCase):
         self.assertEqual(past.rating(), 4.5)
         r = self.client.get(reverse("event_detail", args=[past.pk]))
         self.assertContains(r, "★ 4,5")
+
+
+class FixesAfterTestingTests(TestCase):
+    """Проверки на ошибки, найденные при тестировании (МДК.05.03)."""
+    data = {"username": "elya_t", "email": "elya@example.com", "phone": "+79161234567",
+            "password1": "Proverka-2026", "password2": "Proverka-2026"}
+
+    def test_login_taken_in_other_case(self):
+        make_user("admin")
+        self.assertIn("username", RegisterForm({**self.data, "username": "ADMIN"}).errors)
+
+    def test_password_of_spaces_rejected(self):
+        form = RegisterForm({**self.data, "password1": " " * 8, "password2": " " * 8})
+        self.assertIn("password1", form.errors)
+
+    def test_password_equal_to_login_rejected(self):
+        form = RegisterForm({**self.data, "username": "elya_test", "password1": "elya_test", "password2": "elya_test"})
+        self.assertIn("password1", form.errors)
+
+    def test_email_longer_than_254_rejected(self):
+        self.assertIn("email", RegisterForm({**self.data, "email": "a" * 243 + "@example.com"}).errors)
+
+    def test_review_rating_out_of_range_rejected(self):
+        from .forms import ReviewForm
+        for bad in (0, 6, 100):
+            self.assertIn("rating", ReviewForm({"rating": bad, "text": "Достаточно длинный текст"}).errors, bad)
+        self.assertTrue(ReviewForm({"rating": 3, "text": "Достаточно длинный текст"}).is_valid())
+
+    def test_logged_in_user_leaves_register_and_login(self):
+        self.client.force_login(make_user("anna"))
+        self.assertRedirects(self.client.get(reverse("register")), reverse("home"))
+        self.assertRedirects(self.client.get(reverse("login")), reverse("home"))
+
+    def test_favicon_is_connected(self):
+        r = self.client.get(reverse("home"))
+        self.assertContains(r, 'rel="icon"')
+        self.assertEqual(self.client.get("/favicon.ico").status_code, 301)

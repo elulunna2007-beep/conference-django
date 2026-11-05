@@ -22,7 +22,7 @@ class RegisterForm(forms.Form):
         label="Логин", min_length=3, max_length=20,
         validators=[RegexValidator(r"^[A-Za-z0-9_]+$", "Только латиница, цифры и знак «_».")],
         widget=forms.TextInput(attrs={"pattern": "[A-Za-z0-9_]+", "title": "Латиница, цифры и знак _", "autocomplete": "username"}))
-    email = forms.EmailField(label="Почта")
+    email = forms.EmailField(label="Почта", max_length=254)
     phone = forms.CharField(
         label="Телефон", max_length=20, help_text="Например, +7 916 123-45-67",
         widget=forms.TextInput(attrs={"type": "tel", "pattern": r"(\+7|8)[\d\s()\-]{10,14}", "title": "Формат +7 916 123-45-67"}))
@@ -31,7 +31,8 @@ class RegisterForm(forms.Form):
 
     def clean_username(self):
         username = self.cleaned_data["username"]
-        if User.objects.filter(username=username).exists():
+        # логин считаем занятым и в другом регистре: Admin и admin это один логин
+        if User.objects.filter(username__iexact=username).exists():
             raise forms.ValidationError("Такой логин уже занят.")
         return username
 
@@ -41,14 +42,20 @@ class RegisterForm(forms.Form):
             raise forms.ValidationError("Телефон должен быть в формате +7XXXXXXXXXX.")
         return phone
 
-    def clean_password1(self):
-        password = self.cleaned_data["password1"]
-        password_validation.validate_password(password)
-        return password
-
     def clean(self):
         data = super().clean()
-        if data.get("password1") and data.get("password2") and data["password1"] != data["password2"]:
+        password = data.get("password1")
+        if password:
+            if not password.strip():
+                self.add_error("password1", "Пароль не может состоять из одних пробелов.")
+            else:
+                # пользователя передаём, чтобы пароль не мог совпадать с логином или почтой
+                user = User(username=data.get("username", ""), email=data.get("email", ""))
+                try:
+                    password_validation.validate_password(password, user)
+                except forms.ValidationError as e:
+                    self.add_error("password1", e)
+        if password and data.get("password2") and password != data["password2"]:
             self.add_error("password2", "Пароли не совпадают.")
         return data
 
@@ -92,11 +99,12 @@ class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
         fields = ["rating", "text"]
-        labels = {"rating": "Оценка", "text": "Ваш отзыв"}
-        widgets = {
-            "rating": forms.Select(choices=[(i, "%d из 5" % i) for i in range(5, 0, -1)]),
-            "text": forms.Textarea(attrs={"rows": 4, "maxlength": 500}),
-        }
+        labels = {"text": "Ваш отзыв"}
+        widgets = {"text": forms.Textarea(attrs={"rows": 4, "maxlength": 500})}
+
+    # оценка только от 1 до 5: список в браузере не защищает, если отправить значение мимо формы
+    rating = forms.IntegerField(label="Оценка", min_value=1, max_value=5,
+                                widget=forms.Select(choices=[(i, "%d из 5" % i) for i in range(5, 0, -1)]))
 
     def clean_text(self):
         text = self.cleaned_data["text"].strip()
