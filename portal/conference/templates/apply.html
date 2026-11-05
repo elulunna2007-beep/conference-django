@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Заявка{% endblock %}
+{% block content %}
+<h1>Заявка на мероприятие</h1>
+<p>{{ event.title }}, {{ event.starts_at|date:"d.m.Y H:i" }}</p>
+<form method="post">{% csrf_token %}
+  {{ form.as_p }}
+  <button>Отправить заявку</button>
+</form>
+{% endblock %}

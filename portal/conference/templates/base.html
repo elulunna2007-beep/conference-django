@@ -1,0 +1,29 @@
+{% load static %}<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Конференции.РФ{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/basic.css' %}">
+</head>
+<body>
+<header>
+  <a href="{% url 'home' %}"><b>Конференции.РФ</b></a>
+  <nav>
+    <a href="{% url 'events' %}">Мероприятия</a>
+    {% if user.is_authenticated %}
+      <a href="{% url 'my_applications' %}">Мои заявки</a>
+      {% if is_admin %}<a href="{% url 'manage' %}">Панель администратора</a>{% endif %}
+      <form method="post" action="{% url 'logout' %}" class="inline">{% csrf_token %}<button>Выйти ({{ user.username }})</button></form>
+    {% else %}
+      <a href="{% url 'login' %}">Войти</a>
+      <a href="{% url 'register' %}">Регистрация</a>
+    {% endif %}
+  </nav>
+</header>
+<main>
+  {% for m in messages %}<p class="msg {{ m.tags }}">{{ m }}</p>{% endfor %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

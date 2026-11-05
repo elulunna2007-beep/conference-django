@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Конференции.РФ</h1>
+<p>Портал для подачи заявок на участие в конференциях. Выберите мероприятие, зарегистрируйтесь и отправьте заявку.</p>
+<h2>Ближайшие мероприятия</h2>
+{% for event in events %}
+  <p><a href="{% url 'event_detail' event.pk %}">{{ event.title }}</a>, {{ event.city }}, {{ event.starts_at|date:"d.m.Y H:i" }}</p>
+{% endfor %}
+{% endblock %}

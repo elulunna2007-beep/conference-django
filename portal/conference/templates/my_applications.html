@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Мои заявки{% endblock %}
+{% block content %}
+<h1>Мои заявки</h1>
+{% for a in applications %}
+  <p>{{ a.event.title }}, {{ a.event.starts_at|date:"d.m.Y" }}: <b>{{ a.status }}</b>. {{ a.room }}, {{ a.payment }}</p>
+{% empty %}
+  <p>Заявок пока нет. <a href="{% url 'events' %}">Выбрать мероприятие</a></p>
+{% endfor %}
+{% endblock %}

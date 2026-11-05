@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Панель администратора{% endblock %}
+{% block content %}
+<h1>Панель администратора</h1>
+<table border="1" cellpadding="4">
+  <tr><th>Участник</th><th>Мероприятие</th><th>Помещение</th><th>Оплата</th><th>Статус</th><th></th></tr>
+  {% for a in applications %}
+  <tr>
+    <td>{{ a.user.username }}</td><td>{{ a.event.title }}</td><td>{{ a.room }}</td><td>{{ a.payment }}</td><td>{{ a.status }}</td>
+    <td>{% if a.status.name != "завершено" %}
+      <form method="post" action="{% url 'next_status' a.pk %}">{% csrf_token %}<button>Дальше</button></form>
+    {% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

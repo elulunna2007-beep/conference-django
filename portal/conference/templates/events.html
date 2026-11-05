@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Мероприятия{% endblock %}
+{% block content %}
+<h1>Мероприятия</h1>
+<form method="get"><input type="text" name="q" value="{{ q }}" placeholder="Название"> <button>Найти</button></form>
+{% for event in events %}
+  <p><a href="{% url 'event_detail' event.pk %}">{{ event.title }}</a>, {{ event.city }}, {{ event.starts_at|date:"d.m.Y H:i" }}</p>
+{% empty %}
+  <p>Ничего не найдено.</p>
+{% endfor %}
+{% endblock %}

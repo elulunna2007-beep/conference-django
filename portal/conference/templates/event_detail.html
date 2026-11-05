@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ event.title }}{% endblock %}
+{% block content %}
+<h1>{{ event.title }}</h1>
+<p>{{ event.starts_at|date:"d.m.Y H:i" }}, {{ event.city }}, {{ event.place }}</p>
+<p>{{ event.description }}</p>
+{% if event.is_finished %}
+  <p>Мероприятие прошло.</p>
+{% else %}
+  <p><a href="{% url 'apply' event.pk %}">Подать заявку</a></p>
+{% endif %}
+{% endblock %}
