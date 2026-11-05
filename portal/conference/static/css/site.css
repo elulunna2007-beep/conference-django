@@ -129,3 +129,34 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
 .tabs { display: flex; gap: 8px; margin: 0 0 20px; border-bottom: 1px solid var(--line); }
 .tabs a { padding: 10px 18px; text-decoration: none; color: var(--muted); font-weight: 600; border-bottom: 3px solid transparent; margin-bottom: -1px; }
 .tabs a.active { color: var(--bordo); border-bottom-color: var(--bordo); }
+
+/* планшет и телефон */
+@media (max-width: 860px) {
+  .event-top .container, .event-info { grid-template-columns: 1fr; gap: 24px; }
+  .event-top img { height: 240px; }
+  .hero h1 { font-size: 40px; }
+}
+@media (max-width: 640px) {
+  .container { padding: 0 16px; }
+  h1 { font-size: 28px; }
+  h2 { font-size: 24px; }
+  .site-header .container { flex-wrap: wrap; padding-top: 10px; padding-bottom: 10px; gap: 4px 16px; }
+  .nav { flex-wrap: wrap; gap: 4px 16px; }
+  .nav a, .link-button { padding: 8px 0; }
+  .nav a.btn { padding: 8px 14px; }
+  .hero .container { padding-top: 48px; padding-bottom: 48px; }
+  .hero h1 { font-size: 30px; }
+  .hero p { font-size: 17px; }
+  .hero .btn-outline { margin: 10px 0 0; }
+  .section { padding: 32px 0; }
+  .section-head { flex-direction: column; gap: 4px; }
+  .cards { grid-template-columns: 1fr; }
+  .filters .field { flex: 1 1 100%; }
+  .btn { min-height: 44px; }
+  .btn-small { min-height: 40px; }
+  .form-card { margin: 20px auto; padding: 22px 18px; }
+  .app-card { flex-direction: column; align-items: flex-start; }
+  .app-actions { flex-wrap: wrap; }
+  .site-footer .container { flex-direction: column; gap: 6px; }
+  .tabs a { padding: 10px 12px; }
+}
