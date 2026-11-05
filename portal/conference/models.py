@@ -54,6 +54,10 @@ class Application(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        constraints = [
+            # одна заявка участника на одно мероприятие; проверка в форме есть, это защита на уровне базы
+            models.UniqueConstraint(fields=["user", "event"], name="one_application_per_event"),
+        ]
 
     def __str__(self):
         return "%s: %s" % (self.user.username, self.event.title)
