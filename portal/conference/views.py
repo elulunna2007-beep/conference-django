@@ -1,7 +1,5 @@
 from django.contrib import messages
 from django.contrib.auth import login
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from django.views import View
@@ -9,6 +7,7 @@ from django.views.generic import CreateView, DetailView, FormView, ListView, Tem
 
 from .forms import ApplicationForm, RegisterForm
 from .models import Application, Event, Status
+from .permissions import AdminRequiredMixin, ParticipantRequiredMixin
 
 
 class HomeView(TemplateView):
@@ -54,7 +53,7 @@ class RegisterView(FormView):
         return redirect("home")
 
 
-class ApplyView(LoginRequiredMixin, CreateView):
+class ApplyView(ParticipantRequiredMixin, CreateView):
     template_name = "apply.html"
     form_class = ApplicationForm
 
@@ -78,7 +77,7 @@ class ApplyView(LoginRequiredMixin, CreateView):
         return redirect("my_applications")
 
 
-class MyApplicationsView(LoginRequiredMixin, ListView):
+class MyApplicationsView(ParticipantRequiredMixin, ListView):
     template_name = "my_applications.html"
     context_object_name = "applications"
 
@@ -86,24 +85,17 @@ class MyApplicationsView(LoginRequiredMixin, ListView):
         return Application.objects.filter(user=self.request.user).select_related("event", "status")
 
 
-class ManageView(LoginRequiredMixin, ListView):
+class ManageView(AdminRequiredMixin, ListView):
     """Панель администратора: все заявки и смена статуса."""
     template_name = "manage.html"
     context_object_name = "applications"
-
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated and not request.user.is_staff:
-            raise PermissionDenied
-        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         return Application.objects.select_related("event", "status", "user")
 
 
-class NextStatusView(LoginRequiredMixin, View):
+class NextStatusView(AdminRequiredMixin, View):
     def post(self, request, pk):
-        if not request.user.is_staff:
-            raise PermissionDenied
         app = get_object_or_404(Application, pk=pk)
         following = Status.objects.filter(position__gt=app.status.position).first()
         if following:

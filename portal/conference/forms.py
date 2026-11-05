@@ -17,13 +17,17 @@ def normalize_phone(raw):
 
 
 class RegisterForm(forms.Form):
+    # атрибуты в widget это проверка в браузере, правила на сервере те же
     username = forms.CharField(
         label="Логин", min_length=3, max_length=20,
-        validators=[RegexValidator(r"^[A-Za-z0-9_]+$", "Только латиница, цифры и знак «_».")])
+        validators=[RegexValidator(r"^[A-Za-z0-9_]+$", "Только латиница, цифры и знак «_».")],
+        widget=forms.TextInput(attrs={"pattern": "[A-Za-z0-9_]+", "title": "Латиница, цифры и знак _", "autocomplete": "username"}))
     email = forms.EmailField(label="Почта")
-    phone = forms.CharField(label="Телефон", max_length=20, help_text="Например, +7 916 123-45-67")
-    password1 = forms.CharField(label="Пароль", strip=False, widget=forms.PasswordInput)
-    password2 = forms.CharField(label="Пароль ещё раз", strip=False, widget=forms.PasswordInput)
+    phone = forms.CharField(
+        label="Телефон", max_length=20, help_text="Например, +7 916 123-45-67",
+        widget=forms.TextInput(attrs={"type": "tel", "pattern": r"(\+7|8)[\d\s()\-]{10,14}", "title": "Формат +7 916 123-45-67"}))
+    password1 = forms.CharField(label="Пароль", strip=False, widget=forms.PasswordInput(attrs={"minlength": 8, "autocomplete": "new-password"}))
+    password2 = forms.CharField(label="Пароль ещё раз", strip=False, widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}))
 
     def clean_username(self):
         username = self.cleaned_data["username"]

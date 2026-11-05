@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -76,3 +77,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
+
+# сессии и cookie
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_AGE = 60 * 60 * 2          # сессия живёт 2 часа
+SESSION_COOKIE_SECURE = not DEBUG         # на настоящем сервере cookie только по HTTPS
+CSRF_COOKIE_SECURE = not DEBUG
+
+# при запуске тестов пароли хешируются быстрым алгоритмом, иначе тесты идут больше минуты
+if "test" in sys.argv:
+    PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
