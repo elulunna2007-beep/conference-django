@@ -9,7 +9,6 @@
 | Как запретить в базе две одинаковые заявки | документация Django 6.1, «Constraints reference», раздел UniqueConstraint: https://docs.djangoproject.com/en/6.1/ref/models/constraints/ | в `Meta.constraints` задают `UniqueConstraint(fields=[...], name=...)`, Django создаёт ограничение в базе, имя обязательно |
 | Что значит `UNIQUE constraint failed` | SQLite, «Result and Error Codes»: https://www.sqlite.org/rescode.html | код 2067 `SQLITE_CONSTRAINT_UNIQUE` означает, что нарушено уникальное ограничение |
 | Какая команда создаёт таблицы и что делает | документация Django, «Migrations»: https://docs.djangoproject.com/en/6.1/topics/migrations/ | `makemigrations` собирает изменения моделей в файл, `migrate` применяет его к базе, `sqlmigrate` показывает SQL |
-| Как работает `reverse()` и что за `NoReverseMatch` | документация Django, `django.urls`: https://docs.djangoproject.com/en/6.1/ref/urlresolvers/ | `reverse()` ищет адрес по имени из `urls.py`, если имени нет, будет `NoReverseMatch` |
 
 Скриншоты страниц справочника: `06_spravochnik_django_uniqueconstraint.png`, `07_sqlite_kod_oshibki_unique.png`.
 
