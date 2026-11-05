@@ -5,6 +5,7 @@
     <div>
       <span class="tag">{{ event.city }}</span>
       {% if event.is_finished %}<span class="tag tag-past">Прошло</span>{% endif %}
+      {% if event.rating %}<span class="tag stars">★ {{ event.rating }}</span>{% endif %}
     </div>
     <h3><a href="{% url 'event_detail' event.pk %}">{{ event.title }}</a></h3>
     <p class="meta">{{ event.starts_at|date:"j E, H:i" }}. {{ event.place }}</p>

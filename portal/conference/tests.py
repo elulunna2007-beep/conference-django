@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .forms import ApplicationForm, RegisterForm, normalize_phone
-from .models import Application, Event, Profile, Status
+from .models import Application, Event, Profile, Review, Status
 
 
 def make_user(name, group="Участники", password="Proverka-2026"):
@@ -244,3 +244,69 @@ class ReviewAndFilterTests(TestCase):
         r = self.client.get(reverse("manage"), {"event": self.past.pk})
         self.assertEqual([a.event.title for a in r.context["applications"]], ["Прошедшее"])
         self.assertEqual(len(self.client.get(reverse("manage")).context["applications"]), 2)
+
+
+class CrudAndFlowTests(TestCase):
+    def setUp(self):
+        self.admin = make_user("boss", "Администраторы")
+        self.user = make_user("anna")
+        self.event = make_event(days=7, title="Для проверок")
+        self.new = Status.objects.get(name="новая")
+
+    def event_data(self, **kw):
+        data = {"title": "Новая встреча", "description": "Описание встречи", "starts_at": "2027-03-01T10:00",
+                "city": "Москва", "place": "Зал 1", "image": "event-1.jpg"}
+        data.update(kw)
+        return data
+
+    def test_admin_creates_edits_deletes_event(self):
+        self.client.force_login(self.admin)
+        r = self.client.post(reverse("event_create"), self.event_data())
+        self.assertRedirects(r, reverse("manage_events"))
+        ev = Event.objects.get(title="Новая встреча")
+        self.client.post(reverse("event_edit", args=[ev.pk]), self.event_data(title="Встреча изменена"))
+        ev.refresh_from_db()
+        self.assertEqual(ev.title, "Встреча изменена")
+        self.client.post(reverse("event_delete", args=[ev.pk]))
+        self.assertFalse(Event.objects.filter(pk=ev.pk).exists())
+
+    def test_event_title_too_short(self):
+        self.client.force_login(self.admin)
+        r = self.client.post(reverse("event_create"), self.event_data(title="Ab"))
+        self.assertEqual(r.status_code, 200)
+        self.assertFalse(Event.objects.filter(title="Ab").exists())
+
+    def test_participant_cannot_manage_events(self):
+        self.client.force_login(self.user)
+        self.assertEqual(self.client.get(reverse("manage_events")).status_code, 403)
+        self.assertEqual(self.client.post(reverse("event_create"), self.event_data()).status_code, 403)
+        self.assertEqual(self.client.post(reverse("event_delete", args=[self.event.pk])).status_code, 403)
+        self.assertTrue(Event.objects.filter(pk=self.event.pk).exists())
+
+    def test_status_goes_in_order_and_stops(self):
+        app = Application.objects.create(user=self.user, event=self.event, status=self.new, room="Малый зал", payment="Банковская карта")
+        names = []
+        for _ in range(3):
+            app.advance()
+            names.append(app.status.name)
+        self.assertEqual(names, ["назначено", "завершено", "завершено"])
+
+    def test_user_cancels_only_new_application(self):
+        app = Application.objects.create(user=self.user, event=self.event, status=self.new, room="Малый зал", payment="Банковская карта")
+        self.client.force_login(self.user)
+        self.client.post(reverse("cancel_application", args=[app.pk]))
+        self.assertFalse(Application.objects.filter(pk=app.pk).exists())
+        app = Application.objects.create(user=self.user, event=self.event, status=Status.objects.get(name="назначено"), room="Малый зал", payment="Банковская карта")
+        self.client.post(reverse("cancel_application", args=[app.pk]))
+        self.assertTrue(Application.objects.filter(pk=app.pk).exists())
+
+    def test_event_rating_is_average_of_reviews(self):
+        done = Status.objects.get(name="завершено")
+        past = make_event(days=-2, title="Прошедшая")
+        self.assertIsNone(past.rating())
+        for name, rating in (("u1", 5), ("u2", 4)):
+            app = Application.objects.create(user=make_user(name), event=past, status=done, room="Малый зал", payment="Банковская карта")
+            Review.objects.create(application=app, rating=rating, text="Хороший день")
+        self.assertEqual(past.rating(), 4.5)
+        r = self.client.get(reverse("event_detail", args=[past.pk]))
+        self.assertContains(r, "★ 4,5")

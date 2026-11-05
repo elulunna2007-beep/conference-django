@@ -3,9 +3,10 @@ from django.contrib.auth import login
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from django.views import View
-from django.views.generic import CreateView, DetailView, FormView, ListView, TemplateView
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, TemplateView, UpdateView
 
-from .forms import ApplicationForm, RegisterForm, ReviewForm
+from .forms import ApplicationForm, EventForm, RegisterForm, ReviewForm
 from .models import Application, Event, Review, Status
 from .permissions import AdminRequiredMixin, ParticipantRequiredMixin
 
@@ -45,6 +46,11 @@ class EventDetailView(DetailView):
     model = Event
     template_name = "event_detail.html"
     context_object_name = "event"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["reviews"] = Review.objects.filter(application__event=self.object).select_related("application__user")
+        return ctx
 
 
 class RegisterView(FormView):
@@ -117,10 +123,8 @@ class ManageView(AdminRequiredMixin, ListView):
 class NextStatusView(AdminRequiredMixin, View):
     def post(self, request, pk):
         app = get_object_or_404(Application, pk=pk)
-        following = Status.objects.filter(position__gt=app.status.position).first()
+        following = app.advance()
         if following:
-            app.status = following
-            app.save()
             messages.success(request, "Статус заявки изменён: %s." % following.name)
         return redirect("manage")
 
@@ -149,3 +153,55 @@ class ReviewCreateView(ParticipantRequiredMixin, CreateView):
         review.save()
         messages.success(self.request, "Спасибо, отзыв сохранён.")
         return redirect("my_applications")
+
+
+class CancelApplicationView(ParticipantRequiredMixin, View):
+    """Участник может отозвать свою заявку, пока она новая."""
+
+    def post(self, request, pk):
+        app = get_object_or_404(Application, pk=pk, user=request.user)
+        if app.status.position == 1:
+            app.delete()
+            messages.success(request, "Заявка отменена.")
+        else:
+            messages.error(request, "Заявку уже взяли в работу, отменить её нельзя.")
+        return redirect("my_applications")
+
+
+class ManageEventsView(AdminRequiredMixin, ListView):
+    template_name = "manage_events.html"
+    context_object_name = "events"
+
+    def get_queryset(self):
+        return Event.objects.all().order_by("-starts_at")
+
+
+class EventCreateView(AdminRequiredMixin, CreateView):
+    template_name = "event_form.html"
+    form_class = EventForm
+    success_url = reverse_lazy("manage_events")
+
+    def form_valid(self, form):
+        messages.success(self.request, "Мероприятие добавлено.")
+        return super().form_valid(form)
+
+
+class EventUpdateView(AdminRequiredMixin, UpdateView):
+    model = Event
+    template_name = "event_form.html"
+    form_class = EventForm
+    success_url = reverse_lazy("manage_events")
+
+    def form_valid(self, form):
+        messages.success(self.request, "Изменения сохранены.")
+        return super().form_valid(form)
+
+
+class EventDeleteView(AdminRequiredMixin, DeleteView):
+    model = Event
+    template_name = "event_confirm_delete.html"
+    success_url = reverse_lazy("manage_events")
+
+    def form_valid(self, form):
+        messages.success(self.request, "Мероприятие удалено вместе с заявками на него.")
+        return super().form_valid(form)

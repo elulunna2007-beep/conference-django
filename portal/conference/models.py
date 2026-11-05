@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Avg
 from django.utils import timezone
 
 
@@ -7,6 +8,10 @@ class Profile(models.Model):
     """Дополнительные данные пользователя: телефон. Роль задаётся группой пользователя."""
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     phone = models.CharField("Телефон", max_length=20)
+
+    class Meta:
+        verbose_name = "профиль"
+        verbose_name_plural = "профили"
 
     def __str__(self):
         return self.user.username
@@ -19,6 +24,7 @@ class Status(models.Model):
 
     class Meta:
         ordering = ["position"]
+        verbose_name = "статус"
         verbose_name_plural = "статусы"
 
     def __str__(self):
@@ -35,12 +41,19 @@ class Event(models.Model):
 
     class Meta:
         ordering = ["starts_at"]
+        verbose_name = "мероприятие"
+        verbose_name_plural = "мероприятия"
 
     def __str__(self):
         return self.title
 
     def is_finished(self):
         return self.starts_at < timezone.now()
+
+    def rating(self):
+        """Средняя оценка по отзывам или None, если отзывов нет."""
+        avg = Review.objects.filter(application__event=self).aggregate(a=Avg("rating"))["a"]
+        return round(avg, 1) if avg else None
 
 
 ROOMS = ["Большой зал", "Малый зал", "Онлайн-трансляция"]
@@ -58,6 +71,8 @@ class Application(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        verbose_name = "заявка"
+        verbose_name_plural = "заявки"
         constraints = [
             # одна заявка участника на одно мероприятие; проверка в форме есть, это защита на уровне базы
             models.UniqueConstraint(fields=["user", "event"], name="one_application_per_event"),
@@ -65,6 +80,14 @@ class Application(models.Model):
 
     def __str__(self):
         return "%s: %s" % (self.user.username, self.event.title)
+
+    def advance(self):
+        """Переводит заявку на следующий статус: новая, назначено, завершено. Пропускать статусы нельзя."""
+        following = Status.objects.filter(position__gt=self.status.position).first()
+        if following:
+            self.status = following
+            self.save()
+        return following
 
     def can_review(self):
         """Отзыв можно оставить, когда заявка завершена, мероприятие прошло и отзыва ещё нет."""
@@ -76,6 +99,10 @@ class Review(models.Model):
     rating = models.PositiveSmallIntegerField("Оценка")
     text = models.TextField("Текст отзыва")
     created_at = models.DateTimeField("Дата", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "отзыв"
+        verbose_name_plural = "отзывы"
 
     def __str__(self):
         return "Отзыв на %s" % self.application

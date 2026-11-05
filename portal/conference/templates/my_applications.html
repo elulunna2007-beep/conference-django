@@ -16,6 +16,9 @@
       {% elif a.review %}
         <span class="meta">Отзыв оставлен</span>
       {% endif %}
+      {% if a.status.position == 1 %}
+        <form method="post" action="{% url 'cancel_application' a.pk %}">{% csrf_token %}<button class="btn btn-small btn-outline">Отменить</button></form>
+      {% endif %}
     </div>
   </article>
   {% empty %}

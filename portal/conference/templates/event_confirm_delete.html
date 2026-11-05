@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Удаление мероприятия{% endblock %}
+{% block content %}
+<div class="form-card">
+  <h1>Удалить мероприятие?</h1>
+  <p>{{ object.title }}, {{ object.starts_at|date:"j E Y" }}. Заявок на него: {{ object.applications.count }}. Они удалятся вместе с мероприятием.</p>
+  <form method="post">{% csrf_token %}
+    <button class="btn">Да, удалить</button>
+    <a class="btn btn-outline" href="{% url 'manage_events' %}">Нет, оставить</a>
+  </form>
+</div>
+{% endblock %}

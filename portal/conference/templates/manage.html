@@ -2,6 +2,7 @@
 {% block title %}Панель администратора{% endblock %}
 {% block content %}
 <div class="page-title"><h1>Панель администратора</h1></div>
+{% include "_manage_tabs.html" %}
 <form class="filters" method="get">
   <div class="field"><label for="status">Статус</label>
     <select id="status" name="status">

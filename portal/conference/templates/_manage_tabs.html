@@ -1,0 +1,4 @@
+<div class="tabs">
+  <a href="{% url 'manage' %}" {% if request.resolver_match.url_name == 'manage' %}class="active"{% endif %}>Заявки</a>
+  <a href="{% url 'manage_events' %}" {% if request.resolver_match.url_name == 'manage_events' %}class="active"{% endif %}>Мероприятия</a>
+</div>

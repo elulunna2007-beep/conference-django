@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Мероприятие{% endblock %}
+{% block content %}
+<div class="form-card">
+  <h1>{% if object %}Изменить мероприятие{% else %}Новое мероприятие{% endif %}</h1>
+  <form method="post">{% csrf_token %}
+    {% if form.non_field_errors %}<div class="form-error">{{ form.non_field_errors }}</div>{% endif %}
+    {% for field in form %}{% include "_field.html" %}{% endfor %}
+    <button class="btn">Сохранить</button>
+    <a class="btn btn-outline" href="{% url 'manage_events' %}">Отмена</a>
+  </form>
+</div>
+{% endblock %}

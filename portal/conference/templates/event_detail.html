@@ -25,8 +25,16 @@
     <p>{{ event.description }}</p>
   </div>
   <div class="panel">
-    <h3>Отзывы</h3>
+    <h3>Отзывы{% if event.rating %} <span class="stars">★ {{ event.rating }}</span>{% endif %}</h3>
+    {% for r in reviews %}
+    <div class="review">
+      <div class="stars">{% for i in "12345" %}{% if forloop.counter <= r.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
+      <p>{{ r.text }}</p>
+      <p class="meta">{{ r.application.user.username }}, {{ r.created_at|date:"j E Y" }}</p>
+    </div>
+    {% empty %}
     <p class="meta">Пока нет отзывов.</p>
+    {% endfor %}
   </div>
 </div>
 {% endblock %}

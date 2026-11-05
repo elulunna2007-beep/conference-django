@@ -5,7 +5,7 @@ from django.contrib.auth import password_validation
 from django.contrib.auth.models import Group, User
 from django.core.validators import RegexValidator
 
-from .models import Application, Profile, Review, Status
+from .models import Application, Event, Profile, Review, Status
 
 
 def normalize_phone(raw):
@@ -103,3 +103,23 @@ class ReviewForm(forms.ModelForm):
         if len(text) < 10:
             raise forms.ValidationError("Напишите хотя бы 10 символов.")
         return text
+
+
+class EventForm(forms.ModelForm):
+    """Форма мероприятия в панели администратора."""
+    starts_at = forms.DateTimeField(
+        label="Дата и время", input_formats=["%Y-%m-%dT%H:%M"],
+        widget=forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"))
+    image = forms.ChoiceField(label="Фото", required=False,
+                              choices=[("", "Без фото")] + [("event-%d.jpg" % i, "Фото %d" % i) for i in range(1, 10)])
+
+    class Meta:
+        model = Event
+        fields = ["title", "description", "starts_at", "city", "place", "image"]
+        widgets = {"description": forms.Textarea(attrs={"rows": 5})}
+
+    def clean_title(self):
+        title = self.cleaned_data["title"].strip()
+        if len(title) < 5:
+            raise forms.ValidationError("Название не короче 5 символов.")
+        return title

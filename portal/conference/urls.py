@@ -14,6 +14,11 @@ urlpatterns = [
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("applications/", views.MyApplicationsView.as_view(), name="my_applications"),
     path("applications/<int:pk>/review/", views.ReviewCreateView.as_view(), name="review"),
+    path("applications/<int:pk>/cancel/", views.CancelApplicationView.as_view(), name="cancel_application"),
     path("manage/", views.ManageView.as_view(), name="manage"),
+    path("manage/events/", views.ManageEventsView.as_view(), name="manage_events"),
+    path("manage/events/new/", views.EventCreateView.as_view(), name="event_create"),
+    path("manage/events/<int:pk>/edit/", views.EventUpdateView.as_view(), name="event_edit"),
+    path("manage/events/<int:pk>/delete/", views.EventDeleteView.as_view(), name="event_delete"),
     path("manage/applications/<int:pk>/next/", views.NextStatusView.as_view(), name="next_status"),
 ]

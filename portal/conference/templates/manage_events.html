@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Мероприятия: управление{% endblock %}
+{% block content %}
+<div class="page-title"><h1>Панель администратора</h1></div>
+{% include "_manage_tabs.html" %}
+<p><a class="btn btn-small" href="{% url 'event_create' %}">Добавить мероприятие</a></p>
+<div class="app-list">
+  {% for e in events %}
+  <article class="app-card">
+    <div>
+      <h3>{{ e.title }}</h3>
+      <p class="meta">{{ e.starts_at|date:"j E Y, H:i" }}. {{ e.city }}, {{ e.place }}. Заявок: {{ e.applications.count }}</p>
+    </div>
+    <div class="app-actions">
+      {% if e.is_finished %}<span class="tag tag-past">Прошло</span>{% endif %}
+      <a class="btn btn-small btn-outline" href="{% url 'event_edit' e.pk %}">Изменить</a>
+      <a class="btn btn-small btn-outline" href="{% url 'event_delete' e.pk %}">Удалить</a>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% endblock %}
