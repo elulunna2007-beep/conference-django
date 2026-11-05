@@ -1,0 +1,33 @@
+320 / ПРОКРУТКА 572 ['nav.nav 259..572', 'a 259..365', 'a 387..434', 'a.btn 456..572', 'article.card 24..324', 'img 25..323']
+320 /events/ ПРОКРУТКА 572 ['nav.nav 259..572', 'a.active 259..365', 'a 387..434', 'a.btn 456..572', 'article.card 24..324', 'img 25..323']
+320 /events/4/ ПРОКРУТКА 572 ['nav.nav 259..572', 'a 259..365', 'a 387..434', 'a.btn 456..572', 'div.panel 272..401', 'h3 297..376']
+320 /login/ ПРОКРУТКА 572 ['nav.nav 259..572', 'a 259..365', 'a.active 387..434', 'a.btn 456..572']
+320 /register/ ПРОКРУТКА 572 ['nav.nav 259..572', 'a 259..365', 'a 387..434', 'a.btn 456..572']
+320 /applications/ ПРОКРУТКА 525 ['nav.nav 259..525', 'a 259..365', 'a.active 387..440', 'form 462..525', 'button.link-button 462..525', 'article.app-card 24..412']
+320 /events/4/apply/ ПРОКРУТКА 525 ['nav.nav 259..525', 'a 259..365', 'a 387..440', 'form 462..525', 'button.link-button 462..525']
+320 /applications/3/review/ ПРОКРУТКА 525 ['nav.nav 259..525', 'a 259..365', 'a 387..440', 'form 462..525', 'button.link-button 462..525']
+320 /manage/ ПРОКРУТКА 594 ['nav.nav 259..594', 'a 259..365', 'a.active 387..516', 'form 538..594', 'button.link-button 538..594', 'article.app-card 24..450']
+320 /manage/events/ ПРОКРУТКА 594 ['nav.nav 259..594', 'a 259..365', 'a 387..516', 'form 538..594', 'button.link-button 538..594', 'article.app-card 24..505']
+320 /manage/events/new/ ПРОКРУТКА 594 ['nav.nav 259..594', 'a 259..365', 'a 387..516', 'form 538..594', 'button.link-button 538..594']
+390 / ПРОКРУТКА 572 ['nav.nav 259..572', 'a 387..434', 'a.btn 456..572']
+390 /events/ ПРОКРУТКА 572 ['nav.nav 259..572', 'a 387..434', 'a.btn 456..572']
+390 /events/4/ ПРОКРУТКА 572 ['nav.nav 259..572', 'a 387..434', 'a.btn 456..572', 'div.panel 272..401']
+390 /login/ ПРОКРУТКА 572 ['nav.nav 259..572', 'a.active 387..434', 'a.btn 456..572']
+390 /register/ ПРОКРУТКА 572 ['nav.nav 259..572', 'a 387..434', 'a.btn 456..572']
+390 /applications/ ПРОКРУТКА 525 ['nav.nav 259..525', 'a.active 387..440', 'form 462..525', 'button.link-button 462..525', 'article.app-card 24..412', 'article.app-card 24..412']
+390 /events/4/apply/ ПРОКРУТКА 525 ['nav.nav 259..525', 'a 387..440', 'form 462..525', 'button.link-button 462..525']
+390 /applications/3/review/ ПРОКРУТКА 525 ['nav.nav 259..525', 'a 387..440', 'form 462..525', 'button.link-button 462..525']
+390 /manage/ ПРОКРУТКА 594 ['nav.nav 259..594', 'a.active 387..516', 'form 538..594', 'button.link-button 538..594', 'article.app-card 24..450', 'div.app-actions 249..427']
+390 /manage/events/ ПРОКРУТКА 594 ['nav.nav 259..594', 'a 387..516', 'form 538..594', 'button.link-button 538..594', 'article.app-card 24..505', 'div.app-actions 290..482']
+390 /manage/events/new/ ПРОКРУТКА 594 ['nav.nav 259..594', 'a 387..516', 'form 538..594', 'button.link-button 538..594']
+768 / ok 768 
+768 /events/ ok 768 
+768 /events/4/ ok 768 
+768 /login/ ok 768 
+768 /register/ ok 768 
+768 /applications/ ok 768 
+768 /events/4/apply/ ok 768 
+768 /applications/3/review/ ok 768 
+768 /manage/ ok 768 
+768 /manage/events/ ok 768 
+768 /manage/events/new/ ok 768 
