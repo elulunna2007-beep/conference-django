@@ -160,3 +160,35 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--b
   .site-footer .container { flex-direction: column; gap: 6px; }
   .tabs a { padding: 10px 12px; }
 }
+
+/* анимации: переход между страницами и мелкие эффекты */
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: fade-out 0.15s ease both; }
+::view-transition-new(root) { animation: fade-in 0.25s ease both; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-out { to { opacity: 0; } }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes slide-in { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
+
+.cards .card, .app-list .app-card { animation: rise 0.45s ease backwards; }
+.cards .card:nth-child(2), .app-list .app-card:nth-child(2) { animation-delay: 0.06s; }
+.cards .card:nth-child(3), .app-list .app-card:nth-child(3) { animation-delay: 0.12s; }
+.cards .card:nth-child(4), .app-list .app-card:nth-child(4) { animation-delay: 0.18s; }
+.cards .card:nth-child(n+5), .app-list .app-card:nth-child(n+5) { animation-delay: 0.24s; }
+.hero h1 { animation: rise 0.6s ease backwards; }
+.hero p { animation: rise 0.6s ease 0.1s backwards; }
+.hero .btn { animation: rise 0.6s ease 0.2s backwards; }
+.msg { animation: slide-in 0.35s ease backwards; }
+
+.btn { transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease; }
+.btn:hover { box-shadow: 0 4px 12px rgba(122, 30, 58, 0.3); }
+.btn:active { transform: scale(0.97); box-shadow: none; }
+.nav a, .link-button { transition: color 0.15s ease; }
+.card img { transition: transform 0.4s ease; }
+.card:hover img { transform: scale(1.04); }
+
+/* если в системе включено «уменьшить анимацию», всё отключается */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
