@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Мудборд: Конференции.РФ</title>
+<link rel="stylesheet" href="../../portal/conference/static/css/site.css">
+<style>
+  body { padding: 24px 36px; }
+  .board { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 200px; gap: 14px; }
+  .board img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+  .wide { grid-column: span 2; }
+  .word { border-radius: 8px; padding: 18px 20px; display: flex; flex-direction: column; justify-content: flex-end; }
+  .word b { font-family: 'Lora', serif; font-size: 26px; }
+  .w1 { background: var(--bordo); color: #fff; }
+  .w2 { background: var(--cool); color: var(--ink); }
+  .w3 { background: var(--ink); color: #fff; }
+  .w4 { background: #fff; border: 1px solid var(--line); }
+  h1 { margin-bottom: 4px; }
+</style>
+</head>
+<body>
+<h1>Мудборд портала «Конференции.РФ»</h1>
+<p class="meta">Настроение: спокойный деловой тон, живые фото людей и залов, бордо как единственный яркий цвет, много воздуха.</p>
+<div class="board">
+  <img class="wide" src="../../portal/conference/static/img/hero.jpg" alt="">
+  <div class="word w1"><b>Бордо</b><span>единственный акцент: кнопки, ссылки, активные пункты</span></div>
+  <img src="../../portal/conference/static/img/event-3.jpg" alt="">
+  <img src="zal.jpg" alt="">
+  <img src="../../portal/conference/static/img/event-4.jpg" alt="">
+  <div class="word w2"><b>Холодный серый</b><span>теги и вторичные блоки</span></div>
+  <div class="word w3"><b>Графит</b><span>подвал, тёмные блоки, основной текст</span></div>
+  <img src="../../portal/conference/static/img/event-7.jpg" alt="">
+  <img src="../../portal/conference/static/img/event-6.jpg" alt="">
+  <div class="word w4 wide"><b>Lora и Onest</b><span>заголовки с засечками, текст без засечек</span></div>
+</div>
+</body>
+</html>

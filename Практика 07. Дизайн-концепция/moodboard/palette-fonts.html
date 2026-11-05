@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Цвета и шрифты: Конференции.РФ</title>
+<link rel="stylesheet" href="../../portal/conference/static/css/site.css">
+<style>
+  body { padding: 28px 36px; }
+  .sw { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 14px; }
+  .sw div { border-radius: 8px; padding: 14px 16px; min-height: 108px; display: flex; flex-direction: column; justify-content: flex-end; border: 1px solid var(--line); }
+  .sw b { font-size: 17px; }
+  .sw span { font-size: 14px; }
+  .fonts { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 28px; }
+  .fonts .panel p { margin: 6px 0; }
+  .big { font-size: 54px; line-height: 1.1; }
+</style>
+</head>
+<body>
+<h1>Цветовая схема и шрифтовая пара</h1>
+<div class="sw">
+  <div style="background:#7a1e3a;color:#fff"><b>Бордо</b><span>#7A1E3A, акцент</span></div>
+  <div style="background:#5e142b;color:#fff"><b>Тёмное бордо</b><span>#5E142B, наведение</span></div>
+  <div style="background:#f7f3f1;color:#26232b"><b>Тёплый фон</b><span>#F7F3F1, страница</span></div>
+  <div style="background:#ffffff;color:#26232b"><b>Белый</b><span>#FFFFFF, карточки</span></div>
+  <div style="background:#26232b;color:#fff"><b>Графит</b><span>#26232B, текст</span></div>
+</div>
+<div class="sw">
+  <div style="background:#dde4ea;color:#26232b"><b>Холодный серый</b><span>#DDE4EA, теги</span></div>
+  <div style="background:#2a2730;color:#fff"><b>Тёмный блок</b><span>#2A2730, подвал</span></div>
+  <div style="background:#f4dce3;color:#7a1e3a"><b>Светлое бордо</b><span>#F4DCE3, статус «назначено»</span></div>
+  <div style="background:#dcebe5;color:#1f5c4a"><b>Статус «завершено»</b><span>#1F5C4A на #DCEBE5</span></div>
+  <div style="background:#ffffff;color:#a3162a"><b>Ошибка</b><span>#A3162A, подсказки</span></div>
+</div>
+<div class="fonts">
+  <div class="panel"><p class="meta">Заголовки: Lora, 600</p><p class="big" style="font-family:'Lora',serif;font-weight:600">Конференции.РФ</p><h2>Ближайшие мероприятия</h2><h3>Python в работе: данные и автоматизация</h3></div>
+  <div class="panel"><p class="meta">Текст: Onest, 400 и 600</p><p>Выберите мероприятие, зарегистрируйтесь и отправьте заявку. Статус заявки виден в личном кабинете.</p><p><b>Заявка отправлена. Статус: новая.</b></p><p class="meta">0123456789 АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ</p></div>
+</div>
+</body>
+</html>

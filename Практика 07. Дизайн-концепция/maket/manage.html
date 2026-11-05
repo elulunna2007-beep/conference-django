@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Панель администратора</title>
+<link rel="stylesheet" href="../../portal/conference/static/css/site.css">
+</head>
+<body>
+<header class="site-header"><div class="container">
+  <a class="logo" href="index.html">Конференции.РФ</a>
+  <nav class="nav"><a href="events.html">Мероприятия</a>
+    <a href="manage.html" class="active">Панель администратора</a>
+    <button class="link-button">Выйти (admin)</button></nav>
+</div></header>
+<div class="container">
+  <div class="page-title"><h1>Панель администратора</h1></div>
+  <form class="filters">
+    <div class="field"><label for="s">Статус</label><select id="s"><option>Все</option><option>новая</option><option>назначено</option><option>завершено</option></select></div>
+    <div class="field"><label for="ev">Мероприятие</label><select id="ev"><option>Все</option><option>Python в работе</option></select></div>
+    <button class="btn">Показать</button>
+  </form>
+  <div class="app-list">
+    <article class="app-card">
+      <div><h3>Python в работе: данные и автоматизация</h3><p class="meta">Участник anna_k. Большой зал, Банковская карта</p></div>
+      <div class="app-actions"><span class="status status-new">новая</span><a class="btn btn-small" href="#">Перевести дальше</a></div>
+    </article>
+    <article class="app-card">
+      <div><h3>Python в работе: данные и автоматизация</h3><p class="meta">Участник dmitry_s. Большой зал, Наличные при регистрации</p></div>
+      <div class="app-actions"><span class="status status-assigned">назначено</span><a class="btn btn-small" href="#">Перевести дальше</a></div>
+    </article>
+    <article class="app-card">
+      <div><h3>Фронтенд-день</h3><p class="meta">Участник maria_v. Малый зал, Счёт для организации</p></div>
+      <div class="app-actions"><span class="status status-done">завершено</span></div>
+    </article>
+  </div>
+</div>
+<footer class="site-footer"><div class="container">
+  <div>Конференции.РФ, учебный портал</div>
+  <div>Фото: pexels.com</div>
+</div></footer>
+</body>
+</html>
